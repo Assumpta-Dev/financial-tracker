@@ -1,4 +1,6 @@
 import { useState } from "react";
+import BalanceChart from "../components/BalanceChart"; // path points to src/components/BalanceChart.tsx
+
 export default function Dashboard() {
   const tabContents = {
     dashboard: {
@@ -25,7 +27,7 @@ export default function Dashboard() {
           <div className="ml-64 pt-28 px-8">
             <div className="grid grid-cols-3 gap-6">
               {/* CARD */}
-              <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-lg">
+              <div className="flex justify-between items-center bg-white p-4 md:p-8 rounded-xl shadow-lg">
                 <div>
                   <h4 className="text-gray-800 font-bold">Total Balance</h4>
                   <p className="text-green-600 font-bold text-2xl">$8,750.56</p>
@@ -37,10 +39,10 @@ export default function Dashboard() {
               </div>
 
               {/* CARD */}
-              <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-lg">
+              <div className="flex justify-between items-center bg-white p-4 md:p-8 rounded-xl shadow-lg">
                 <div>
                   <h4 className="text-gray-800 font-bold">Total Balance</h4>
-                  <p className="text-green-600 font-bold text-2xl">$8,750.56</p>
+                  <p className="text-green-600 font-bold text-2xl">$2,800.5</p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-green-100">
@@ -49,14 +51,76 @@ export default function Dashboard() {
               </div>
 
               {/* CARD */}
-              <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow-lg">
+              <div className="flex justify-between items-center bg-white p-4 md:p-8 rounded-xl shadow-lg">
                 <div>
                   <h4 className="text-gray-800 font-bold">Total Balance</h4>
-                  <p className="text-green-600 font-bold text-2xl">$8,750.56</p>
+                  <p className="text-green-600 font-bold text-2xl">$1,000.0</p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-red-100">
                   <img src="/trending-down.png" className="w-6" />
+                </div>
+              </div>
+            </div>
+            {/*chart card*/}
+            <div className="w-full flex flex-col bg-white h-64 md:h-96 p-4 md:p-8 lg:p-12 mt-8 rounded-xl shadow-lg">
+              {/* Heading at the TOP */}
+              <h3 className="text-gray-800 font-bold mb-4 text-lg text-left">
+                Balance Trend
+              </h3>
+
+              {/* Chart takes the remaining space */}
+              <div className="w-full flex-1 text-sm">
+                <BalanceChart
+                  data={[
+                    { date: "Jan-05", balance: 7899.567 },
+                    { date: "March-20", balance: 5555.6 },
+                    { date: "June-28", balance: 3900.0 },
+                    { date: "July-01", balance: 2800.5 },
+                    { date: "Aug-15", balance: 2200.95 },
+                    { date: "Oct-07", balance: 1200.95 },
+                    { date: "Today", balance: 1000.0 },
+                  ]}
+                />
+              </div>
+            </div>
+            {/*Recent transaction cards*/}
+            <div className="flex flex-col h-full gap-4">
+              <div className="w-full flex justify-between items-center px-8 mt-8">
+                <h3 className="text-gray-800 font-bold text-2xl text-left">
+                  Recent Transactions
+                </h3>
+                <button
+                  type="submit"
+                  className="add px-4 rounded-md  border border-gray-300 flex items-center justify-center gap-2 w-44 md:w-56"
+                >
+                  <span className="font-md text-2xl mr-2">+</span> Add
+                  Transaction
+                </button>
+              </div>
+              <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
+                <div className="flex justify-items items-center space-x-2">
+                  <div className="p-2 rounded-xl bg-green-100">
+                    <img
+                      src="/trending-up.png"
+                      alt="trending arrow up"
+                      className="w-6"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-gray-800 font-bold mb-2 text-lg">
+                      Monthly Salary
+                    </h3>
+                    <p className="font-sm text-sm text-gray-500">Salary</p>
+                  </div>
+                </div>
+                <div className="text-rigt">
+                  <h3 className="text-green-700 font-bold mb-2 text-lg">
+                    +$5000.0
+                  </h3>
+                  <p className="font-sm text-sm text-gray-500 text-right">
+                    Nov 30
+                  </p>
                 </div>
               </div>
             </div>
@@ -94,8 +158,10 @@ export default function Dashboard() {
     <>
       {/* SIDEBAR */}
       <div className="fixed top-0 left-0 w-64 h-screen bg-white shadow-xl p-6">
-        <h2 className="font-bold text-xl text-green-800">Finance</h2>
-        <p className="text-sm text-gray-400 mb-8">Personal Tracker</p>
+        <div className="text-left">
+          <h2 className="font-bold text-xl text-green-800">Finance</h2>
+          <p className="text-sm text-gray-400 mb-8">Personal Tracker</p>
+        </div>
 
         <ul className="space-y-4">
           <li
@@ -124,7 +190,7 @@ export default function Dashboard() {
       </div>
 
       {/* MAIN PAGE OUTPUT */}
-      <div>{tabContents[activeTab].content}</div>
+      <div className="w-full">{tabContents[activeTab].content}</div>
     </>
   );
 }
