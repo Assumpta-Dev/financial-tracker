@@ -27,9 +27,9 @@ export default function Login() {
           />
 
           <button
-            type="submit"
+            type="button"
             className="signin text-white p-2 rounded-md hover:bg-green-700"
-            onClick={() => navigate("/Dashboard")}
+            onClick={() => navigate("/dashboard")}
           >
             Sign In
           </button>
