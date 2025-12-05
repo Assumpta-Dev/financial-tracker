@@ -50,6 +50,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 button img {
   object-fit: cover;
@@ -68,6 +69,9 @@ a {
 .dashboard img {
   image-rendering: crisp-edges;
   color: #ffffff;
+}
+.add {
+  background: #059142;
 }
 .finace {
   background-color: #059142;
