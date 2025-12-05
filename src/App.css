@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+body {
+  background-color: #ffffff;
+  font-size: large;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+button img {
+  object-fit: cover;
+  image-rendering: crisp-edges; /* For pixelated images */
+  max-width: 100%;
+}
+a {
+  text-decoration: none;
+}
+.nav {
+  padding-left: 0;
+}
+.dicon img {
+  color: white;
+}
+.dashboard img {
+  image-rendering: crisp-edges;
+  color: #ffffff;
+}
+.finace {
+  background-color: #059142;
+}
+.signin {
+  background-color: #059142;
+}
+.google {
+  background-color: #ffffff;
+  color: #000000;
+}
+.google:hover {
+  background-color: #059142;
+  color: #ffffff;
+}
+
+.user-input {
+  padding-left: 40px;
+  background: url("/person.png") no-repeat 10px center;
+  background-size: 18px;
+}
+.email-input {
+  padding-left: 40px;
+  background: url("/mail.png") no-repeat 10px center;
+  background-size: 18px;
+}
+.password-input {
+  padding-left: 40px;
+  background: url("/password.png") no-repeat 10px center;
+  background-size: 18px;
+}
+.google button {
+  background-color: #ffffff;
+}
