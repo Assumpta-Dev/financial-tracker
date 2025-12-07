@@ -123,6 +123,106 @@ export default function Dashboard() {
                   </p>
                 </div>
               </div>
+              <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
+                <div className="flex justify-items items-center space-x-2">
+                  <div className="p-2 rounded-xl bg-green-100">
+                    <img
+                      src="/restaurant.png"
+                      alt="Restaurant icon"
+                      className="w-6"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-gray-800 font-bold mb-2 text-lg">
+                      Restaurant
+                    </h3>
+                    <p className="font-sm text-sm text-gray-500">Food</p>
+                  </div>
+                </div>
+                <div className="text-rigt">
+                  <h3 className="text-green-700 font-bold mb-2 text-lg">
+                    +$200.0
+                  </h3>
+                  <p className="font-sm text-sm text-gray-500 text-right">
+                    Dec 01
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
+                <div className="flex justify-items items-center space-x-2">
+                  <div className="p-2 rounded-xl bg-green-100">
+                    <img
+                      src="/drinks.png"
+                      alt="Drinks icon"
+                      className="w-6"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-gray-800 font-bold mb-2 text-lg">
+                      Drinks
+                    </h3>
+                    <p className="font-sm text-sm text-gray-500">Cofee</p>
+                  </div>
+                </div>
+                <div className="text-rigt">
+                  <h3 className="text-green-700 font-bold mb-2 text-lg">
+                    +$90.0
+                  </h3>
+                  <p className="font-sm text-sm text-gray-500 text-right">
+                    Dec 03
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
+                <div className="flex justify-items items-center space-x-2">
+                  <div className="p-2 rounded-xl bg-green-100">
+                    <img
+                      src="/bills.png"
+                      alt="Bills"
+                      className="w-6"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-gray-800 font-bold mb-2 text-lg">
+                      Bills
+                    </h3>
+                    <p className="font-sm text-sm text-gray-500">Water & Electricity</p>
+                  </div>
+                </div>
+                <div className="text-rigt">
+                  <h3 className="text-green-700 font-bold mb-2 text-lg">
+                    +$100.0
+                  </h3>
+                  <p className="font-sm text-sm text-gray-500 text-right">
+                    Nov 30
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
+                <div className="flex justify-items items-center space-x-2">
+                  <div className="p-2 rounded-xl bg-green-100">
+                    <img
+                      src="/dollar.png"
+                      alt="Money"
+                      className="w-6"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-gray-800 font-bold mb-2 text-lg">
+                      Deposit
+                    </h3>
+                    <p className="font-sm text-sm text-gray-500">Savings</p>
+                  </div>
+                </div>
+                <div className="text-rigt">
+                  <h3 className="text-green-700 font-bold mb-2 text-lg">
+                    +$300.0
+                  </h3>
+                  <p className="font-sm text-sm text-gray-500 text-right">
+                    Dec 06
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </>
@@ -135,6 +235,94 @@ export default function Dashboard() {
           <div className="fixed top-0 left-64 right-0 h-24 bg-white shadow-md z-10 px-8 flex items-center justify-between">
             <h2 className="font-bold items-start text-lg text-gray-800">
               Transactions
+            </h2>
+            <div className="flex items-center space-x-4">
+              <div className="text-right">
+                <p className="font-bold text-gray-800">Joe Doe</p>
+                <p className="text-sm text-gray-500">john@example.com</p>
+              </div>
+
+              <div className="p-3 rounded-full bg-gray-100">
+                <img src="/person.png" alt="Profile" className="w-6" />
+              </div>
+            </div>
+          </div>
+        </>
+      ),
+    },
+    categories: {
+      title: "Categories",
+      content: (
+        <>
+          <div className="fixed top-0 left-64 right-0 h-24 bg-white shadow-md z-10 px-8 flex items-center justify-between">
+            <h2 className="font-bold items-start text-lg text-gray-800">
+              Categories
+            </h2>
+            <div className="flex items-center space-x-4">
+              <div className="text-right">
+                <p className="font-bold text-gray-800">Joe Doe</p>
+                <p className="text-sm text-gray-500">john@example.com</p>
+              </div>
+
+              <div className="p-3 rounded-full bg-gray-100">
+                <img src="/person.png" alt="Profile" className="w-6" />
+              </div>
+            </div>
+          </div>
+        </>
+      ),
+    },
+    analytics: {
+      title: "Analytics",
+      content: (
+        <>
+          <div className="fixed top-0 left-64 right-0 h-24 bg-white shadow-md z-10 px-8 flex items-center justify-between">
+            <h2 className="font-bold items-start text-lg text-gray-800">
+              Analytics
+            </h2>
+            <div className="flex items-center space-x-4">
+              <div className="text-right">
+                <p className="font-bold text-gray-800">Joe Doe</p>
+                <p className="text-sm text-gray-500">john@example.com</p>
+              </div>
+
+              <div className="p-3 rounded-full bg-gray-100">
+                <img src="/person.png" alt="Profile" className="w-6" />
+              </div>
+            </div>
+          </div>
+        </>
+      ),
+    },
+    settings: {
+      title: "Settings",
+      content: (
+        <>
+          <div className="fixed top-0 left-64 right-0 h-24 bg-white shadow-md z-10 px-8 flex items-center justify-between">
+            <h2 className="font-bold items-start text-lg text-gray-800">
+              Settings
+            </h2>
+            <div className="flex items-center space-x-4">
+              <div className="text-right">
+                <p className="font-bold text-gray-800">Joe Doe</p>
+                <p className="text-sm text-gray-500">john@example.com</p>
+              </div>
+
+              <div className="p-3 rounded-full bg-gray-100">
+                <img src="/person.png" alt="Profile" className="w-6" />
+              </div>
+            </div>
+          </div>
+        </>
+      ),
+    },
+    signout: {
+      title: "Sign Out",
+      content: (
+        <>
+          <div className="fixed top-0 left-64 right-0 h-24 bg-white shadow-md z-10 px-8 flex items-center justify-between">
+            <h2 className="font-bold items-start text-lg text-gray-800">
+              Sign Out
             </h2>
             <div className="flex items-center space-x-4">
               <div className="text-right">
@@ -185,6 +373,50 @@ export default function Dashboard() {
           >
             <img src="/transactions.svg" className="w-5 mr-3 dicon" />
             Transactions
+          </li>
+          <li
+            className={`flex items-center justify-center cursor-pointer p-3 rounded-xl ${
+              activeTab === "categories"
+                ? "bg-green-700 text-white"
+                : "text-gray-800"
+            }`}
+            onClick={() => setActiveTab("categories")}
+          >
+            <img src="/category.svg" className="w-5 mr-3 dicon" />
+            Categories
+          </li>
+          <li
+            className={`flex items-center justify-center cursor-pointer p-3 rounded-xl ${
+              activeTab === "analytics"
+                ? "bg-green-700 text-white"
+                : "text-gray-800"
+            }`}
+            onClick={() => setActiveTab("analytics")}
+          >
+            <img src="/analytics.svg" className="w-5 mr-3 dicon" />
+            Analytics
+          </li>
+          <li
+            className={`flex items-center justify-center cursor-pointer p-3 rounded-xl ${
+              activeTab === "settings"
+                ? "bg-green-700 text-white"
+                : "text-gray-800"
+            }`}
+            onClick={() => setActiveTab("settings")}
+          >
+            <img src="/settings.svg" className="w-5 mr-3 dicon" />
+            Settings
+          </li>
+          <li
+            className={`flex items-center justify-center cursor-pointer p-3 rounded-xl ${
+              activeTab === "signout"
+                ? "bg-green-700 text-white"
+                : "text-gray-800"
+            }`}
+            onClick={() => setActiveTab("signout")}
+          >
+            <img src="/logout.svg" className="w-5 mr-3 dicon" />
+            Sign Out
           </li>
         </ul>
       </div>
