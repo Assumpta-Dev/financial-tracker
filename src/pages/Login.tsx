@@ -1,6 +1,59 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../components/firebase";
+import { setDoc, doc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
+
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setFullname] = useState("");
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    toast.info("Logged out");
+    navigate("/signin");
+  };
+  const handleRegistration: React.FormEventHandler<HTMLFormElement> = async (
+    e
+  ) => {
+    e.preventDefault();
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters long", {
+        position: "top-center",
+      });
+      return;
+    }
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      const user = auth.currentUser;
+      console.log(user);
+      if (user) {
+        await setDoc(doc(db, "users", user.uid), {
+          email: user.email,
+          fullName: name,
+        });
+      }
+
+      console.log("User Registered Successfully!!");
+      toast.success("User Registered Successfully!!", {
+        position: "top-center",
+      });
+
+      // Redirect to sign in after 2 seconds
+      setTimeout(() => {
+        setActiveTab("signin"); // change to your sign-in route
+      }, 2000);
+    } catch (error: any) {
+      console.log(error.message);
+      toast.error(error.message, {
+        position: "bottom-center",
+      });
+    }
+  };
   const tabContent = {
     signin: {
       title: "Sign In",
@@ -13,6 +66,7 @@ export default function Login() {
             type="email"
             placeholder="you@email.com"
             id="email"
+            onChange={(e) => setEmail(e.target.value)}
             className="email-input p-2 border border-gray-300 rounded-md"
           />
 
@@ -23,6 +77,7 @@ export default function Login() {
             type="password"
             placeholder="password"
             id="password"
+            onChange={(e) => setPassword(e.target.value)}
             className="password-input p-2 border border-gray-300 rounded-md"
           />
 
@@ -44,10 +99,14 @@ export default function Login() {
         </form>
       ),
     },
+
     createAccount: {
       title: "Create Account",
       content: (
-        <form className="w-full flex flex-col space-y-4 max-w-md items-start m-auto">
+        <form
+          onSubmit={handleRegistration}
+          className="w-full flex flex-col space-y-4 max-w-md items-start m-auto"
+        >
           <label htmlFor="name" className="self-start">
             Full Name
           </label>
@@ -55,6 +114,8 @@ export default function Login() {
             type="text"
             placeholder="JohnDoe"
             id="name"
+            onChange={(e) => setFullname(e.target.value)}
+            required
             className="user-input w-full p-2 border border-gray-300 rounded-md"
           />
 
@@ -65,6 +126,8 @@ export default function Login() {
             type="email"
             placeholder="you@email.com"
             id="email"
+            onChange={(e) => setEmail(e.target.value)}
+            required
             className="email-input w-full p-2 border border-gray-300 rounded-md"
           />
 
@@ -75,6 +138,8 @@ export default function Login() {
             type="password"
             placeholder="password"
             id="password"
+            onChange={(e) => setPassword(e.target.value)}
+            required
             className="password-input w-full p-2 border border-gray-300 rounded-md"
           />
           <p className="text-gray-600">
@@ -97,6 +162,7 @@ export default function Login() {
   type Tabkey = keyof typeof tabContent;
   const [activeTab, setActiveTab] = useState<Tabkey>("signin");
   const navigate = useNavigate();
+
   return (
     <>
       <div className="grid grid-cols-2 w-full h-screen m-auto gap-4">
