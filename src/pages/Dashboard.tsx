@@ -1,7 +1,25 @@
 import { useState } from "react";
 import BalanceChart from "../components/BalanceChart"; // path points to src/components/BalanceChart.tsx
+import { signOut } from "firebase/auth";
+import { auth } from "../components/firebase"; // adjust path if different
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+
+  const [logoutActive, setLogoutActive] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast.info("Logged out successfully");
+      navigate("/signin");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   const tabContents = {
     dashboard: {
       title: "Dashboard",
@@ -151,11 +169,7 @@ export default function Dashboard() {
               <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
                 <div className="flex justify-items items-center space-x-2">
                   <div className="p-2 rounded-xl bg-green-100">
-                    <img
-                      src="/drinks.png"
-                      alt="Drinks icon"
-                      className="w-6"
-                    />
+                    <img src="/drinks.png" alt="Drinks icon" className="w-6" />
                   </div>
                   <div className="text-left">
                     <h3 className="text-gray-800 font-bold mb-2 text-lg">
@@ -176,17 +190,15 @@ export default function Dashboard() {
               <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
                 <div className="flex justify-items items-center space-x-2">
                   <div className="p-2 rounded-xl bg-green-100">
-                    <img
-                      src="/bills.png"
-                      alt="Bills"
-                      className="w-6"
-                    />
+                    <img src="/bills.png" alt="Bills" className="w-6" />
                   </div>
                   <div className="text-left">
                     <h3 className="text-gray-800 font-bold mb-2 text-lg">
                       Bills
                     </h3>
-                    <p className="font-sm text-sm text-gray-500">Water & Electricity</p>
+                    <p className="font-sm text-sm text-gray-500">
+                      Water & Electricity
+                    </p>
                   </div>
                 </div>
                 <div className="text-rigt">
@@ -201,11 +213,7 @@ export default function Dashboard() {
               <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
                 <div className="flex justify-items items-center space-x-2">
                   <div className="p-2 rounded-xl bg-green-100">
-                    <img
-                      src="/dollar.png"
-                      alt="Money"
-                      className="w-6"
-                    />
+                    <img src="/dollar.png" alt="Money" className="w-6" />
                   </div>
                   <div className="text-left">
                     <h3 className="text-gray-800 font-bold mb-2 text-lg">
@@ -353,7 +361,7 @@ export default function Dashboard() {
 
         <ul className="space-y-4">
           <li
-            className={`flex items-center justify-center cursor-pointer p-3 rounded-xl ${
+            className={`flex items-center justify-start cursor-pointer p-3 rounded-xl ${
               activeTab === "dashboard"
                 ? "bg-green-700 text-white"
                 : "text-gray-800"
@@ -364,7 +372,7 @@ export default function Dashboard() {
             Dashboard
           </li>
           <li
-            className={`flex items-center justify-center cursor-pointer p-3 rounded-xl ${
+            className={`flex items-center justify-start cursor-pointer p-3 rounded-xl ${
               activeTab === "transactions"
                 ? "bg-green-700 text-white"
                 : "text-gray-800"
@@ -375,7 +383,7 @@ export default function Dashboard() {
             Transactions
           </li>
           <li
-            className={`flex items-center justify-center cursor-pointer p-3 rounded-xl ${
+            className={`flex items-center justify-start cursor-pointer p-3 rounded-xl ${
               activeTab === "categories"
                 ? "bg-green-700 text-white"
                 : "text-gray-800"
@@ -386,7 +394,7 @@ export default function Dashboard() {
             Categories
           </li>
           <li
-            className={`flex items-center justify-center cursor-pointer p-3 rounded-xl ${
+            className={`flex items-center justify-start cursor-pointer p-3 rounded-xl ${
               activeTab === "analytics"
                 ? "bg-green-700 text-white"
                 : "text-gray-800"
@@ -397,7 +405,7 @@ export default function Dashboard() {
             Analytics
           </li>
           <li
-            className={`flex items-center justify-center cursor-pointer p-3 rounded-xl ${
+            className={`flex items-center justify-start cursor-pointer p-3 rounded-xl ${
               activeTab === "settings"
                 ? "bg-green-700 text-white"
                 : "text-gray-800"
@@ -408,12 +416,13 @@ export default function Dashboard() {
             Settings
           </li>
           <li
-            className={`flex items-center justify-center cursor-pointer p-3 rounded-xl ${
-              activeTab === "signout"
-                ? "bg-green-700 text-white"
-                : "text-gray-800"
+            className={`flex items-center justify-start cursor-pointer p-3 rounded-xl ${
+              logoutActive ? "bg-green-700 text-white" : "text-gray-800"
             }`}
-            onClick={() => setActiveTab("signout")}
+            onClick={() => {
+              setLogoutActive(true);
+              handleLogout();
+            }}
           >
             <img src="/logout.svg" className="w-5 mr-3 dicon" />
             Sign Out

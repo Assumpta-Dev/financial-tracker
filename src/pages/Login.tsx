@@ -1,22 +1,22 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast /*ToastContainer*/ } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../components/firebase";
 import { setDoc, doc } from "firebase/firestore";
-import { signOut } from "firebase/auth";
+/*import { signOut } from "firebase/auth";*/
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setFullname] = useState("");
 
-  const handleLogout = async () => {
+  /*const handleLogout = async () => {
     await signOut(auth);
     toast.info("Logged out");
     navigate("/signin");
-  };
+  };*/
   const handleRegistration: React.FormEventHandler<HTMLFormElement> = async (
     e
   ) => {
