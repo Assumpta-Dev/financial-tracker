@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import IncomeExpenseChart from "../components/IncomeExpenseChart";
 import CategoryPieChart from "../components/CategoryPieChart";
+import Settings from "../components/settings";
 /*import { type CategoryData, categoryData } from "../components/chart";*/
 
 export default function Dashboard() {
@@ -932,6 +933,10 @@ export default function Dashboard() {
                 <img src="/person.png" alt="Profile" className="w-6" />
               </div>
             </div>
+          </div>
+          {/*Settings main content*/}
+          <div>
+            <Settings />
           </div>
         </>
       ),

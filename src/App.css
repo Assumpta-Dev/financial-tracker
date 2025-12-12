@@ -60,6 +60,10 @@ button img {
 a {
   text-decoration: none;
 }
+.pass {
+  background-color: #ffffff;
+  border: 1px solid #888;
+}
 .trans {
   border-radius: 10px;
   padding: 2px;
