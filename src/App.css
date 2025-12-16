@@ -60,6 +60,16 @@ button img {
 a {
   text-decoration: none;
 }
+.cancel {
+  background-color: #f05555;
+}
+.trans-card {
+  background-color: #059142;
+  color: #ffffff;
+}
+.acc {
+  background-color: #f05555;
+}
 .pass {
   background-color: #ffffff;
   border: 1px solid #888;

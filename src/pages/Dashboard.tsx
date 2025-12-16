@@ -1,27 +1,162 @@
-import { useState } from "react";
-import BalanceChart from "../components/BalanceChart"; // path points to src/components/BalanceChart.tsx
+import { useState, useEffect } from "react";
+import BalanceChart from "../components/BalanceChart";
 import { signOut } from "firebase/auth";
-import { auth } from "../components/firebase"; // adjust path if different
+import { auth, db } from "../components/firebase";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import mapFirebaseError from "../utils/mapFirebaseError";
 import IncomeExpenseChart from "../components/IncomeExpenseChart";
 import CategoryPieChart from "../components/CategoryPieChart";
 import Settings from "../components/settings";
-/*import { type CategoryData, categoryData } from "../components/chart";*/
+import AddTransactionModal from "../components/AddTransactionModal";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  deleteDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore";
+
+// Define Transaction interface for type safety
+interface Transaction {
+  id: string;
+  userId: string;
+  amount: number;
+  category: string;
+  date: string;
+  description: string;
+  type: "income" | "expense";
+  createdAt?: any;
+}
+
+// Define User interface for authenticated user
+interface AuthUser {
+  fullName: string;
+  email: string;
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
 
+  // State for logout button
   const [logoutActive, setLogoutActive] = useState(false);
 
+  // State for modal visibility
+  const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false);
+
+  // State for transactions list from Firebase
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  // State for authenticated user information
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+
+  // State for loading and error handling
+  const [isLoading, setIsLoading] = useState(true);
+
+  // useEffect hook to fetch authenticated user data and set up transactions listener
+  useEffect(() => {
+    // Check if user is authenticated
+    const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        // User is not authenticated, redirect to login
+        navigate("/signin");
+        return;
+      }
+
+      try {
+        // Fetch user data from Firestore using their UID
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnapshot = await getDoc(userDocRef);
+
+        if (userDocSnapshot.exists()) {
+          // Set authenticated user information from Firestore
+          const userData = userDocSnapshot.data();
+          setAuthUser({
+            fullName: userData.fullName || "User",
+            email: userData.email || user.email || "user@example.com",
+          });
+        } else {
+          // Fallback to Firebase auth user if not in Firestore
+          setAuthUser({
+            fullName: "User",
+            email: user.email || "user@example.com",
+          });
+        }
+
+        // Set up real-time listener for user's transactions
+        // Query Firestore for transactions where userId matches current user's UID
+        const q = query(
+          collection(db, "transactions"),
+          where("userId", "==", user.uid)
+        );
+
+        // Subscribe to real-time updates
+        const unsubscribeTransactions = onSnapshot(q, (querySnapshot) => {
+          const transactionsList: Transaction[] = [];
+          querySnapshot.forEach((doc) => {
+            // Convert Firestore document to Transaction object with ID
+            transactionsList.push({
+              id: doc.id,
+              ...doc.data(),
+            } as Transaction);
+          });
+          // Sort transactions by date (newest first)
+          transactionsList.sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          );
+          setTransactions(transactionsList);
+          setIsLoading(false);
+        });
+
+        return () => unsubscribeTransactions();
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setIsLoading(false);
+      }
+    });
+
+    return () => unsubscribeAuth();
+  }, [navigate]);
+
+  // Handle user logout
   const handleLogout = async () => {
     try {
+      // Sign out from Firebase
       await signOut(auth);
       toast.info("Logged out successfully");
       navigate("/signin");
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(mapFirebaseError(error));
     }
+  };
+
+  // Handle delete transaction
+  const handleDeleteTransaction = async (transactionId: string) => {
+    // Confirm deletion with user
+    if (!window.confirm("Are you sure you want to delete this transaction?")) {
+      return;
+    }
+
+    try {
+      // Delete transaction document from Firestore
+      await deleteDoc(doc(db, "transactions", transactionId));
+      toast.success("Transaction deleted successfully", {
+        position: "top-center",
+      });
+    } catch (error: any) {
+      console.error("Error deleting transaction:", error);
+      toast.error("Failed to delete transaction: " + mapFirebaseError(error), {
+        position: "bottom-center",
+      });
+    }
+  };
+
+  // Handle transaction refresh callback from modal
+  const handleTransactionAdded = () => {
+    // Transactions will be automatically updated by the useEffect listener
+    // This callback is just for any additional actions if needed
   };
 
   const tabContents = {
@@ -29,14 +164,21 @@ export default function Dashboard() {
       title: "Dashboard",
       content: (
         <>
+          {/* Top Header Bar - displays authenticated user info */}
           <div className="fixed top-0 left-64 right-0 h-24 bg-white shadow-md z-10 px-8 flex items-center justify-between">
             <h2 className="font-bold items-start text-lg text-gray-800">
               Dashboard
             </h2>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className="font-bold text-gray-800">Joe Doe</p>
-                <p className="text-sm text-gray-500">john@example.com</p>
+                {/* Display authenticated user's full name */}
+                <p className="font-bold text-gray-800">
+                  {authUser?.fullName || "Loading..."}
+                </p>
+                {/* Display authenticated user's email */}
+                <p className="text-sm text-gray-500">
+                  {authUser?.email || "Loading..."}
+                </p>
               </div>
 
               <div className="p-3 rounded-full bg-gray-100">
@@ -112,131 +254,108 @@ export default function Dashboard() {
                 <h3 className="text-gray-800 font-bold text-2xl text-left">
                   Recent Transactions
                 </h3>
+                {/* Add Transaction button - opens modal */}
                 <button
-                  type="submit"
-                  className="add px-2 py-2 rounded-md  border border-gray-300 flex items-center justify-center gap-1 w-44 md:w-56"
+                  onClick={() => setIsAddTransactionOpen(true)}
+                  className="add px-2 py-2 rounded-md bg-green-500 text-white flex items-center justify-center gap-1 w-44 md:w-56 hover:bg-green-600 transition"
                 >
                   <span className="font-md text-xl mr-2">+</span> Add
                   Transaction
                 </button>
               </div>
-              <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
-                <div className="flex justify-items items-center space-x-2">
-                  <div className="p-2 rounded-xl bg-green-100">
-                    <img
-                      src="/trending-up.png"
-                      alt="trending arrow up"
-                      className="w-6"
-                    />
-                  </div>
-                  <div className="text-left">
-                    <h3 className="text-gray-800 font-bold mb-2 text-lg">
-                      Monthly Salary
-                    </h3>
-                    <p className="font-sm text-sm text-gray-500">Salary</p>
-                  </div>
+
+              {/* Dynamic Transaction Cards - from Firebase */}
+              {isLoading ? (
+                <div className="h-full flex items-center justify-center py-8">
+                  <p className="text-gray-500">Loading transactions...</p>
                 </div>
-                <div className="text-rigt">
-                  <h3 className="text-green-700 font-bold mb-2 text-lg">
-                    +$5000.0
-                  </h3>
-                  <p className="font-sm text-sm text-gray-500 text-right">
-                    Nov 30
+              ) : transactions.length === 0 ? (
+                <div className="h-full flex items-center justify-center py-8">
+                  <p className="text-gray-500">
+                    No transactions yet. Click "Add Transaction" to get started!
                   </p>
                 </div>
-              </div>
-              <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
-                <div className="flex justify-items items-center space-x-2">
-                  <div className="p-2 rounded-xl bg-green-100">
-                    <img
-                      src="/restaurant.png"
-                      alt="Restaurant icon"
-                      className="w-6"
-                    />
+              ) : (
+                // Display each transaction from Firebase
+                transactions.slice(0, 5).map((transaction) => (
+                  <div
+                    key={transaction.id}
+                    className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl"
+                  >
+                    {/* Transaction info section - left side */}
+                    <div className="flex justify-items items-center space-x-2">
+                      {/* Category icon background - color based on income/expense */}
+                      <div
+                        className={`p-2 rounded-xl ${
+                          transaction.type === "income"
+                            ? "bg-green-100"
+                            : "bg-red-100"
+                        }`}
+                      >
+                        {/* Icon for transaction type */}
+                        <img
+                          src={
+                            transaction.type === "income"
+                              ? "/trending-up.png"
+                              : "/trending-down.png"
+                          }
+                          alt={transaction.category}
+                          className="w-6"
+                        />
+                      </div>
+
+                      {/* Transaction category and description */}
+                      <div className="text-left">
+                        <h3 className="text-gray-800 font-bold mb-2 text-lg">
+                          {transaction.category}
+                        </h3>
+                        <p className="font-sm text-sm text-gray-500">
+                          {transaction.description || "No description"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Transaction amount and actions section - right side */}
+                    <div className="text-right flex items-center justify-end gap-2">
+                      <div className="flex flex-col items-end">
+                        {/* Display amount with +/- prefix based on type */}
+                        <h3
+                          className={`font-bold mb-2 text-lg ${
+                            transaction.type === "income"
+                              ? "text-green-700"
+                              : "text-red-700"
+                          }`}
+                        >
+                          {transaction.type === "income" ? "+" : "-"}$
+                          {transaction.amount.toFixed(2)}
+                        </h3>
+                        {/* Transaction date */}
+                        <p className="font-sm text-sm text-gray-500">
+                          {new Date(transaction.date).toLocaleDateString()}
+                        </p>
+                      </div>
+
+                      {/* Delete button - removes transaction */}
+                      <button
+                        onClick={() => handleDeleteTransaction(transaction.id)}
+                        className="trans-card ml-4 text-red-500 hover:text-red-700 font-bold text-lg"
+                        title="Delete transaction"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <h3 className="text-gray-800 font-bold mb-2 text-lg">
-                      Restaurant
-                    </h3>
-                    <p className="font-sm text-sm text-gray-500">Food</p>
-                  </div>
-                </div>
-                <div className="text-rigt">
-                  <h3 className="text-green-700 font-bold mb-2 text-lg">
-                    +$200.0
-                  </h3>
-                  <p className="font-sm text-sm text-gray-500 text-right">
-                    Dec 01
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
-                <div className="flex justify-items items-center space-x-2">
-                  <div className="p-2 rounded-xl bg-green-100">
-                    <img src="/drinks.png" alt="Drinks icon" className="w-6" />
-                  </div>
-                  <div className="text-left">
-                    <h3 className="text-gray-800 font-bold mb-2 text-lg">
-                      Drinks
-                    </h3>
-                    <p className="font-sm text-sm text-gray-500">Cofee</p>
-                  </div>
-                </div>
-                <div className="text-rigt">
-                  <h3 className="text-green-700 font-bold mb-2 text-lg">
-                    +$90.0
-                  </h3>
-                  <p className="font-sm text-sm text-gray-500 text-right">
-                    Dec 03
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
-                <div className="flex justify-items items-center space-x-2">
-                  <div className="p-2 rounded-xl bg-green-100">
-                    <img src="/bills.png" alt="Bills" className="w-6" />
-                  </div>
-                  <div className="text-left">
-                    <h3 className="text-gray-800 font-bold mb-2 text-lg">
-                      Bills
-                    </h3>
-                    <p className="font-sm text-sm text-gray-500">
-                      Water & Electricity
-                    </p>
-                  </div>
-                </div>
-                <div className="text-rigt">
-                  <h3 className="text-green-700 font-bold mb-2 text-lg">
-                    +$100.0
-                  </h3>
-                  <p className="font-sm text-sm text-gray-500 text-right">
-                    Nov 30
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col-2 justify-between items-center bg-white p-4 md:p-8 lg:p-12 shadow-lg rounded-xl">
-                <div className="flex justify-items items-center space-x-2">
-                  <div className="p-2 rounded-xl bg-green-100">
-                    <img src="/dollar.png" alt="Money" className="w-6" />
-                  </div>
-                  <div className="text-left">
-                    <h3 className="text-gray-800 font-bold mb-2 text-lg">
-                      Deposit
-                    </h3>
-                    <p className="font-sm text-sm text-gray-500">Savings</p>
-                  </div>
-                </div>
-                <div className="text-rigt">
-                  <h3 className="text-green-700 font-bold mb-2 text-lg">
-                    +$300.0
-                  </h3>
-                  <p className="font-sm text-sm text-gray-500 text-right">
-                    Dec 06
-                  </p>
-                </div>
-              </div>
+                ))
+              )}
             </div>
           </div>
+
+          {/* Modal for adding new transactions */}
+          <AddTransactionModal
+            isOpen={isAddTransactionOpen}
+            onClose={() => setIsAddTransactionOpen(false)}
+            onTransactionAdded={handleTransactionAdded}
+          />
         </>
       ),
     },
@@ -244,14 +363,21 @@ export default function Dashboard() {
       title: "Transactions",
       content: (
         <>
+          {/* Top Header Bar - displays authenticated user info for Transactions tab */}
           <div className="fixed top-0 left-64 right-0 h-24 bg-white shadow-md z-10 px-8 flex items-center justify-between">
             <h2 className="font-bold items-start text-lg text-gray-800">
               Transactions
             </h2>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className="font-bold text-gray-800">Joe Doe</p>
-                <p className="text-sm text-gray-500">john@example.com</p>
+                {/* Display authenticated user's full name */}
+                <p className="font-bold text-gray-800">
+                  {authUser?.fullName || "Loading..."}
+                </p>
+                {/* Display authenticated user's email */}
+                <p className="text-sm text-gray-500">
+                  {authUser?.email || "Loading..."}
+                </p>
               </div>
 
               <div className="p-3 rounded-full bg-gray-100">
@@ -587,8 +713,14 @@ export default function Dashboard() {
             </h2>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className="font-bold text-gray-800">Joe Doe</p>
-                <p className="text-sm text-gray-500">john@example.com</p>
+                {/* Display authenticated user's full name */}
+                <p className="font-bold text-gray-800">
+                  {authUser?.fullName || "Loading..."}
+                </p>
+                {/* Display authenticated user's email */}
+                <p className="text-sm text-gray-500">
+                  {authUser?.email || "Loading..."}
+                </p>
               </div>
 
               <div className="p-3 rounded-full bg-gray-100">
@@ -805,8 +937,14 @@ export default function Dashboard() {
             </h2>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className="font-bold text-gray-800">Joe Doe</p>
-                <p className="text-sm text-gray-500">john@example.com</p>
+                {/* Display authenticated user's full name */}
+                <p className="font-bold text-gray-800">
+                  {authUser?.fullName || "Loading..."}
+                </p>
+                {/* Display authenticated user's email */}
+                <p className="text-sm text-gray-500">
+                  {authUser?.email || "Loading..."}
+                </p>
               </div>
 
               <div className="p-3 rounded-full bg-gray-100">
@@ -925,8 +1063,14 @@ export default function Dashboard() {
             </h2>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className="font-bold text-gray-800">Joe Doe</p>
-                <p className="text-sm text-gray-500">john@example.com</p>
+                {/* Display authenticated user's full name */}
+                <p className="font-bold text-gray-800">
+                  {authUser?.fullName || "Loading..."}
+                </p>
+                {/* Display authenticated user's email */}
+                <p className="text-sm text-gray-500">
+                  {authUser?.email || "Loading..."}
+                </p>
               </div>
 
               <div className="p-3 rounded-full bg-gray-100">

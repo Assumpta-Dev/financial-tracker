@@ -2,39 +2,53 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast /*ToastContainer*/ } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth, db } from "../components/firebase";
-import { setDoc, doc } from "firebase/firestore";
+import mapFirebaseError from "../utils/mapFirebaseError";
+import { setDoc, doc, getDoc } from "firebase/firestore";
 /*import { signOut } from "firebase/auth";*/
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setFullname] = useState("");
+  const navigate = useNavigate();
 
   /*const handleLogout = async () => {
     await signOut(auth);
     toast.info("Logged out");
     navigate("/signin");
   };*/
+
+  // Handle user registration with validation
   const handleRegistration: React.FormEventHandler<HTMLFormElement> = async (
     e
   ) => {
     e.preventDefault();
+
+    // Validate password length
     if (password.length < 8) {
       toast.error("Password must be at least 8 characters long", {
         position: "top-center",
       });
       return;
     }
+
     try {
+      // Create user account in Firebase Authentication
       await createUserWithEmailAndPassword(auth, email, password);
       const user = auth.currentUser;
       console.log(user);
+
+      // Store user data in Firestore database
       if (user) {
         await setDoc(doc(db, "users", user.uid), {
           email: user.email,
           fullName: name,
+          createdAt: new Date().toISOString(),
         });
       }
 
@@ -43,13 +57,56 @@ export default function Login() {
         position: "top-center",
       });
 
-      // Redirect to sign in after 2 seconds
+      // Redirect to signin after registration
       setTimeout(() => {
-        setActiveTab("signin"); // change to your sign-in route
+        setActiveTab("signin");
       }, 2000);
     } catch (error: any) {
       console.log(error.message);
-      toast.error(error.message, {
+      toast.error(mapFirebaseError(error), {
+        position: "bottom-center",
+      });
+    }
+  };
+
+  // Handle user sign in with authentication validation
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      // Sign in user with email and password
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Check if user exists in Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnapshot = await getDoc(userDocRef);
+
+      if (!userDocSnapshot.exists()) {
+        // User account not created, prevent signin
+        toast.error("Account not found. Please create an account first.", {
+          position: "top-center",
+        });
+        await auth.signOut();
+        return;
+      }
+
+      console.log("User Signed In Successfully!!");
+      toast.success("Signed In Successfully!!", {
+        position: "top-center",
+      });
+
+      // Redirect to dashboard after successful authentication
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+    } catch (error: any) {
+      console.log(error.message);
+      toast.error(mapFirebaseError(error) || "Sign in failed", {
         position: "bottom-center",
       });
     }
@@ -58,7 +115,10 @@ export default function Login() {
     signin: {
       title: "Sign In",
       content: (
-        <form className="w-full flex flex-col space-y-4 max-w-md m-auto">
+        <form
+          onSubmit={handleSignIn}
+          className="w-full flex flex-col space-y-4 max-w-md m-auto"
+        >
           <label htmlFor="email" className="self-start">
             Email
           </label>
@@ -66,7 +126,9 @@ export default function Login() {
             type="email"
             placeholder="you@email.com"
             id="email"
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
             className="email-input p-2 border border-gray-300 rounded-md"
           />
 
@@ -77,14 +139,15 @@ export default function Login() {
             type="password"
             placeholder="password"
             id="password"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
             className="password-input p-2 border border-gray-300 rounded-md"
           />
 
           <button
-            type="button"
+            type="submit"
             className="signin text-white p-2 rounded-md hover:bg-green-700"
-            onClick={() => navigate("/dashboard")}
           >
             Sign In
           </button>
@@ -161,7 +224,6 @@ export default function Login() {
   } as const;
   type Tabkey = keyof typeof tabContent;
   const [activeTab, setActiveTab] = useState<Tabkey>("signin");
-  const navigate = useNavigate();
 
   return (
     <>
