@@ -1,4 +1,4 @@
-##Personal Finance Tracker Application
+## Personal Finance Tracker Application
 
 Status: Completed
 Technologies: React, TypeScript, Tailwind CSS, Firebase
