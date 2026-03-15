@@ -1,9 +1,9 @@
-## Personal Finance Tracker Application
+# Personal Finance Tracker Application
 
 Status: Completed
 Technologies: React, TypeScript, Tailwind CSS, Firebase
 
-Description
+## Description
 
 This project is a personal finance tracker designed to help users manage and monitor their income and expenses through a dashboard interface. Users can create accounts, add financial transactions, and track their spending over time. The application can be used by individuals and small businesses to gain better insight into their financial activities.
 
