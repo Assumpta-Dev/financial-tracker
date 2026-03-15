@@ -7,11 +7,11 @@ Technologies: React, TypeScript, Tailwind CSS, Firebase
 
 This project is a personal finance tracker designed to help users manage and monitor their income and expenses through a dashboard interface. Users can create accounts, add financial transactions, and track their spending over time. The application can be used by individuals and small businesses to gain better insight into their financial activities.
 
-My Role
+#### My Role
 
 I independently developed the full application, including the user interface and backend integration.
 
-Key Features
+#### Key Features
 
 User authentication and account creation
 
@@ -21,7 +21,7 @@ Add, update, and delete transactions
 
 Secure data storage using Firebase
 
-What I Learned
+#### What I Learned
 
 Building full-stack applications
 
