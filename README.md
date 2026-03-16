@@ -1,34 +1,40 @@
-# Personal Finance Tracker Application
+Personal Finance Tracker
+Small Description
 
-Status: Completed
-Technologies: React, TypeScript, Tailwind CSS, Firebase
+A full-stack web application that allows users to manage income and expenses through a simple financial dashboard.
 
-## Description
+Technologies
 
-This project is a personal finance tracker designed to help users manage and monitor their income and expenses through a dashboard interface. Users can create accounts, add financial transactions, and track their spending over time. The application can be used by individuals and small businesses to gain better insight into their financial activities.
+React, TypeScript, Tailwind CSS, Firebase, Git
 
-### My Role
+Project Overview
 
-I independently developed the full application, including the user interface and backend integration.
+The Personal Finance Tracker is a web application designed to help users monitor their financial activity. Users can create accounts, record transactions, and track their spending over time through a simple and intuitive dashboard interface.
 
-### Key Features
+The application stores user data securely and provides basic financial insights that can help individuals or small businesses manage their finances more effectively.
 
-User authentication and account creation
+Features
 
-Dashboard displaying income and expense data
-
-Add, update, and delete transactions
-
+User account creation and authentication
+Add and manage income and expense transactions
+Dashboard interface for tracking spending
 Secure data storage using Firebase
+Simple and responsive user interface
 
-### What I Learned
+What I Implemented
+
+User authentication and account management
+Transaction tracking system
+Database integration for storing financial records
+Dashboard interface for viewing financial data
+
+What I Learned
 
 Building full-stack applications
+Managing and storing user data securely
+Designing simple dashboards for data visualization
 
-Managing user authentication
+2️⃣ Dessert Shop E-commerce Application
+Small Repository Description
 
-Implementing CRUD operations
-
-Structuring scalable front-end components
-
-Live demo: https://my-finance-track.netlify.app/
+A full-stack e-commerce application where users can browse desserts, add items to a cart, and place orders.
