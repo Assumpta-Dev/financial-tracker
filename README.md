@@ -29,3 +29,5 @@ The application securely stores user data and provides a structured way to manag
 - Managing and storing user data securely
 - Designing dashboards for financial tracking
 A full-stack e-commerce application where users can browse desserts, add items to a cart, and place orders.
+
+Live demo: (https://my-finance-track.netlify.app/)
